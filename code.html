@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#e5eff8",
+            "secondary": "#006b5f",
+            "surface-bright": "#f5faff",
+            "surface": "#f5faff",
+            "primary-fixed-dim": "#95d4b6",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#d9e4ec",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#08c95d",
+            "tertiary": "#003413",
+            "on-secondary-container": "#006f64",
+            "tertiary-container": "#004d1f",
+            "error": "#ba1a1a",
+            "tertiary-fixed": "#66ff8e",
+            "on-secondary-fixed-variant": "#005047",
+            "on-tertiary-fixed": "#002109",
+            "on-secondary": "#ffffff",
+            "secondary-fixed": "#8ff4e3",
+            "on-primary-container": "#7ebb9f",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#3de273",
+            "on-primary-fixed": "#002115",
+            "secondary-container": "#8cf1e1",
+            "inverse-on-surface": "#e8f2fb",
+            "outline-variant": "#bfc9c2",
+            "surface-dim": "#d1dbe4",
+            "outline": "#707973",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#00201c",
+            "on-error-container": "#93000a",
+            "surface-tint": "#2c6951",
+            "on-surface-variant": "#404944",
+            "on-background": "#131d23",
+            "inverse-surface": "#283238",
+            "secondary-fixed-dim": "#72d8c8",
+            "on-surface": "#131d23",
+            "surface-container-low": "#eaf5fe",
+            "primary-container": "#054c36",
+            "surface-container-high": "#dfeaf2",
+            "primary": "#003323",
+            "error-container": "#ffdad6",
+            "primary-fixed": "#b1f0d1",
+            "surface-variant": "#d9e4ec",
+            "on-primary-fixed-variant": "#0d513a",
+            "background": "#f5faff",
+            "inverse-primary": "#95d4b6",
+            "on-tertiary-fixed-variant": "#005322"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#f0f2f5] font-sans text-on-surface antialiased flex flex-col h-screen overflow-hidden">
+<!-- TOP MINIMAL HEADER -->
+<header class="h-12 w-full shrink-0 bg-white border-b border-gray-200 px-4 md:px-5 flex items-center justify-between z-30 shadow-none">
+<div class="flex items-center gap-2">
+<span class="text-base font-bold text-[#003323] tracking-tight">AgentDesk</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-xs md:text-sm font-medium text-gray-700">Yeh Cheese - Karachi</span>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+</header>
+<!-- 2-COLUMN MAIN WORKSPACE (RESPONSIVE) -->
+<main class="flex-1 flex overflow-hidden w-full relative">
+<!-- LEFT COLUMN: CHATS LIST (Full screen on mobile if no chat open, 340px on desktop) -->
+<aside class="w-full md:w-[340px] shrink-0 bg-white border-r border-gray-200 flex flex-col h-full z-20 transition-transform md:translate-x-0" id="chatSidebar">
+<!-- Chat List Header & Simple Search -->
+<div class="p-3 border-b border-gray-100 flex flex-col gap-2.5">
+<div class="flex items-center justify-between px-1">
+<h1 class="text-lg font-bold text-gray-900">Chats</h1>
+<button class="text-xs text-gray-400 hover:text-gray-700 md:inline-block hidden" onclick="clearSelection()" title="Deselect active chat">Clear view</button>
+</div>
+<div class="relative flex items-center w-full">
+<span class="material-symbols-outlined absolute left-2.5 text-[18px] text-gray-400">search</span>
+<input class="w-full h-8 pl-8 pr-3 bg-gray-100 text-gray-800 placeholder:text-gray-400 text-sm rounded-lg border-0 focus:ring-1 focus:ring-secondary focus:bg-white transition-all outline-none" id="chatSearchInput" oninput="filterChats(this.value)" placeholder="Search chats" type="text"/>
+</div>
+</div>
+<!-- Chat Rows -->
+<div class="flex-1 overflow-y-auto divide-y divide-gray-100" id="chatListContainer">
+<!-- Row 1: Ahmed Khan -->
+<div class="chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-[#e8f1ec]/60 cursor-pointer transition-colors" data-conv-id="conv_ahmed_khan" onclick="selectConversation('conv_ahmed_khan')">
+<div class="w-11 h-11 rounded-full bg-[#054c36] text-[#b1f0d1] flex items-center justify-center font-semibold text-sm shrink-0">
+            AK
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<span class="text-sm font-semibold text-gray-900 truncate">Ahmed Khan</span>
+<span class="text-xs text-gray-500">6:43 PM</span>
+</div>
+<p class="text-xs text-gray-600 truncate chat-snippet">Salam Ahmed, Rashid here from management...</p>
+</div>
+<div class="shrink-0 flex items-center">
+<span class="w-5 h-5 rounded-full bg-[#25D366] text-white text-[11px] font-bold flex items-center justify-center">2</span>
+</div>
+</div>
+<!-- Row 2: Sara Ali -->
+<div class="chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-gray-50 cursor-pointer transition-colors" data-conv-id="conv_sara_ali" onclick="selectConversation('conv_sara_ali')">
+<div class="w-11 h-11 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-semibold text-sm shrink-0">
+            SA
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<span class="text-sm font-medium text-gray-800 truncate">Sara Ali</span>
+<span class="text-xs text-gray-400">6:36 PM</span>
+</div>
+<p class="text-xs text-gray-500 truncate chat-snippet">Super choice! Both with Stuffed Cheese Crust...</p>
+</div>
+<div class="shrink-0 flex items-center">
+<span class="w-5 h-5 rounded-full bg-[#25D366] text-white text-[11px] font-bold flex items-center justify-center">1</span>
+</div>
+</div>
+<!-- Row 3: Muhammad Usman -->
+<div class="chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-gray-50 cursor-pointer transition-colors" data-conv-id="conv_muhammad_usman" onclick="selectConversation('conv_muhammad_usman')">
+<div class="w-11 h-11 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-semibold text-sm shrink-0">
+            MU
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<span class="text-sm font-medium text-gray-800 truncate">Muhammad Usman</span>
+<span class="text-xs text-gray-400">6:18 PM</span>
+</div>
+<p class="text-xs text-gray-500 truncate chat-snippet">Bhai rider Tariq aapke street ke gate par...</p>
+</div>
+</div>
+<!-- Row 4: Hamza Tariq -->
+<div class="chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-gray-50 cursor-pointer transition-colors" data-conv-id="conv_hamza_tariq" onclick="selectConversation('conv_hamza_tariq')">
+<div class="w-11 h-11 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-semibold text-sm shrink-0">
+            HT
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<span class="text-sm font-medium text-gray-800 truncate">Hamza Tariq</span>
+<span class="text-xs text-gray-400">4:15 PM</span>
+</div>
+<p class="text-xs text-gray-500 truncate chat-snippet">Okay great, I just transferred Rs. 3,450.</p>
+</div>
+</div>
+<!-- Row 5: Fatima Noor -->
+<div class="chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-gray-50 cursor-pointer transition-colors" data-conv-id="conv_fatima_noor" onclick="selectConversation('conv_fatima_noor')">
+<div class="w-11 h-11 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-semibold text-sm shrink-0">
+            FN
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<span class="text-sm font-medium text-gray-800 truncate">Fatima Noor</span>
+<span class="text-xs text-gray-400">3:40 PM</span>
+</div>
+<p class="text-xs text-gray-500 truncate chat-snippet">You're very welcome Fatima! So glad you loved...</p>
+</div>
+</div>
+<!-- Row 6: Bilal Sheikh -->
+<div class="chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-gray-50 cursor-pointer transition-colors" data-conv-id="conv_bilal_sheikh" onclick="selectConversation('conv_bilal_sheikh')">
+<div class="w-11 h-11 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-semibold text-sm shrink-0">
+            BS
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-0.5">
+<span class="text-sm font-medium text-gray-800 truncate">Bilal Sheikh</span>
+<span class="text-xs text-gray-400">Yesterday</span>
+</div>
+<p class="text-xs text-gray-500 truncate chat-snippet">Walaikum Assalam Bilal! Yes, our riders carry...</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- RIGHT COLUMN / VIEWPORT: ACTIVE CHAT VIEWPORT OR EMPTY STATE -->
+<section class="flex-1 flex flex-col h-full bg-[#efeae2]/40 relative w-full hidden md:flex" id="chatViewportWrapper">
+<!-- EMPTY STATE VIEW -->
+<div class="hidden flex-1 flex-col items-center justify-center p-6 text-center bg-[#f8fafc]" id="emptyConversationState">
+<div class="w-16 h-16 rounded-full bg-[#e8f1ec] text-[#003323] flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[32px]">chat_bubble_outline</span>
+</div>
+<h2 class="text-lg font-semibold text-gray-900 mb-1">Select a conversation</h2>
+<p class="text-sm text-gray-500 max-w-xs mb-5">Choose a customer chat to view messages and reply.</p>
+<button class="px-4 py-2 bg-[#003323] hover:bg-[#054c36] text-white text-xs font-medium rounded-lg transition-colors shadow-sm" onclick="selectConversation('conv_ahmed_khan')">
+          Open Latest Chat (Ahmed Khan)
+        </button>
+</div>
+<!-- ACTIVE CHAT INTERFACE CONTAINER -->
+<div class="flex-1 flex flex-col h-full overflow-hidden" id="activeChatInterface">
+<!-- Chat Header -->
+<header class="h-14 shrink-0 bg-white px-3 md:px-4 border-b border-gray-200 flex items-center justify-between z-20 shadow-none">
+<div class="flex items-center gap-2.5 md:gap-3 min-w-0">
+<!-- Mobile Back Button -->
+<button class="md:hidden w-8 h-8 -ml-1 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors" onclick="backToChatsList()" title="Back to chats">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="w-9 h-9 rounded-full bg-[#054c36] text-[#b1f0d1] flex items-center justify-center font-semibold text-sm shrink-0" id="activeChatAvatar">
+              AK
+            </div>
+<div class="min-w-0">
+<h2 class="text-sm font-semibold text-gray-900 leading-tight truncate" id="activeChatName">Ahmed Khan</h2>
+<p class="text-xs text-gray-500 leading-tight truncate" id="activeChatPhone">+92 300 4254017</p>
+</div>
+</div>
+<!-- AI Control Header Section (Replacing Search & 3-dot) -->
+<div class="flex items-center shrink-0" id="aiControlContainer">
+<!-- Dynamically populated AI Status Badge & Toggle Action Button -->
+</div>
+</header>
+<!-- Subtle AI Stopped Banner -->
+<div class="hidden shrink-0 bg-amber-50/95 border-b border-amber-200/80 px-4 py-2 flex items-center justify-between gap-3 text-xs text-amber-900 z-10 transition-all" id="aiStoppedBanner">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+<span>AI automation stopped for this chat. Incoming messages will wait for manual operator reply.</span>
+</div>
+<button class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-2.5 py-1 rounded transition text-xs shadow-xs" onclick="toggleActiveAiMode()">
+            Resume AI
+          </button>
+</div>
+<!-- Chat Messages Scroll Area -->
+<div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-3.5 bg-[#e5ddd5]/30" id="messagesViewport">
+<!-- Messages dynamically rendered by JavaScript -->
+</div>
+<!-- Message Composer (Clean: Input + Send only) -->
+<footer class="bg-gray-100 p-2.5 px-3 md:px-4 border-t border-gray-200 z-20 flex items-center gap-2">
+<!-- Clean Text Input -->
+<div class="flex-1 min-w-0">
+<input class="w-full h-10 px-4 bg-white text-gray-900 placeholder:text-gray-400 text-sm rounded-lg border border-gray-200 focus:outline-none focus:border-gray-400 focus:ring-0 transition-all" id="messageInput" onkeydown="handleKeyDown(event)" placeholder="Type a message..." type="text"/>
+</div>
+<!-- Clean Emerald Send Button -->
+<button class="w-10 h-10 rounded-full bg-[#00a884] text-white hover:bg-[#008f6f] flex items-center justify-center shrink-0 shadow-sm transition-transform active:scale-95" id="sendBtn" onclick="sendMessage()" title="Send">
+<span class="material-symbols-outlined text-[19px]">send</span>
+</button>
+</footer>
+</div>
+</section>
+</main>
+<!-- Interactive Logic -->
+<script>
+    // State management for conversations
+    const conversations = {
+      'conv_ahmed_khan': {
+        id: 'conv_ahmed_khan',
+        name: 'Ahmed Khan',
+        phone: '+92 300 4254017',
+        initials: 'AK',
+        aiActive: false, // Initially stopped for demoing paused state / manual operator
+        messages: [
+          {
+            sender: 'customer',
+            text: 'Salam, Yeh Cheese se order karna hai. Menu bhej dein please.',
+            time: '6:38 PM'
+          },
+          {
+            sender: 'ai',
+            text: "Walaikum Assalam Ahmed! 😊 Here is our latest menu and deals for tonight. Let me know what you'd like to order!",
+            time: '6:39 PM'
+          },
+          {
+            sender: 'customer',
+            text: 'Yeh wala deal available hai abhi? Chicken Tikka combo.',
+            time: '6:40 PM',
+            dealImage: {
+              url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=700&q=80',
+              caption: 'Tikka Combo Deal • Rs. 2,900'
+            }
+          },
+          {
+            sender: 'ai',
+            text: 'Yes! The Tikka Combo is available for Rs. 2,900 with 2 Large Chicken Tikka Pizzas and a 1.5L drink. Would you like me to place this for delivery to Bahria Town?',
+            time: '6:40 PM'
+          },
+          {
+            sender: 'system',
+            text: 'Order #YC-4892 confirmed on Yeh Cheese online store. Total: Rs. 2,900 via Cash on Delivery.',
+            time: '6:42 PM'
+          },
+          {
+            sender: 'human',
+            text: 'Salam Ahmed, Rashid here from management. Confirming that we have sent your order to the kitchen now!',
+            time: '6:43 PM'
+          }
+        ]
+      },
+      'conv_sara_ali': {
+        id: 'conv_sara_ali',
+        name: 'Sara Ali',
+        phone: '+92 321 8892145',
+        initials: 'SA',
+        aiActive: true,
+        messages: [
+          {
+            sender: 'customer',
+            text: 'Hi, I want 2 large pizzas for a family gathering tonight.',
+            time: '6:32 PM'
+          },
+          {
+            sender: 'ai',
+            text: 'Hello Sara! 🍕 We would love to prepare that for you. Which flavors would you prefer? Our top favorites are Creamy Tikka and Fajita Sicilian.',
+            time: '6:33 PM'
+          },
+          {
+            sender: 'customer',
+            text: '1 Creamy Tikka and 1 Ranch Passion, both with stuffed cheese crust please. Also how long for DHA Phase 6?',
+            time: '6:35 PM'
+          },
+          {
+            sender: 'ai',
+            text: 'Super choice! 🧀 Both with Stuffed Cheese Crust will take approx 35-40 minutes to DHA Phase 6. Shall I confirm your order with 1.5L Coke included?',
+            time: '6:36 PM'
+          }
+        ]
+      },
+      'conv_muhammad_usman': {
+        id: 'conv_muhammad_usman',
+        name: 'Muhammad Usman',
+        phone: '+92 333 5521908',
+        initials: 'MU',
+        aiActive: false,
+        messages: [
+          {
+            sender: 'customer',
+            text: 'Salam, maine 45 mins pehle order place kiya tha (Order #YC-1044). Delivery kitni dair mein hogi?',
+            time: '6:15 PM'
+          },
+          {
+            sender: 'ai',
+            text: 'Walaikum Assalam Usman! Let me check the rider status for Order #YC-1044 right away.',
+            time: '6:16 PM'
+          },
+          {
+            sender: 'human',
+            text: 'Bhai rider Tariq aapke street ke gate par pahunch chuka hai. 2 minute mein call kar raha hai aapko.',
+            time: '6:18 PM'
+          }
+        ]
+      },
+      'conv_hamza_tariq': {
+        id: 'conv_hamza_tariq',
+        name: 'Hamza Tariq',
+        phone: '+92 345 7712390',
+        initials: 'HT',
+        aiActive: true,
+        messages: [
+          {
+            sender: 'customer',
+            text: 'Salam, payment link not opening on safari browser. Showing gateway timeout.',
+            time: '4:12 PM'
+          },
+          {
+            sender: 'ai',
+            text: 'Walaikum Assalam Hamza! Apologies for the inconvenience. Here are our direct bank transfer details: Meezan Bank | Yeh Cheese Pvt Ltd | IBAN: PK64MEZN0001092837482. You can also pay cash/card on delivery!',
+            time: '4:13 PM'
+          },
+          {
+            sender: 'customer',
+            text: 'Okay great, I just transferred Rs. 3,450. Sending screenshot.',
+            time: '4:15 PM'
+          }
+        ]
+      },
+      'conv_fatima_noor': {
+        id: 'conv_fatima_noor',
+        name: 'Fatima Noor',
+        phone: '+92 312 9988231',
+        initials: 'FN',
+        aiActive: true,
+        messages: [
+          {
+            sender: 'customer',
+            text: 'Order #YC-1038 received, thank you! The molten lava cake was heavenly ❤️',
+            time: '3:38 PM'
+          },
+          {
+            sender: 'ai',
+            text: "You're very welcome Fatima! So glad you loved the Molten Lava cake! Have a wonderful evening ahead! 🎉",
+            time: '3:40 PM'
+          }
+        ]
+      },
+      'conv_bilal_sheikh': {
+        id: 'conv_bilal_sheikh',
+        name: 'Bilal Sheikh',
+        phone: '+92 301 4455667',
+        initials: 'BS',
+        aiActive: true,
+        messages: [
+          {
+            sender: 'customer',
+            text: 'Salam, can I pay via JazzCash on delivery or does rider bring POS machine?',
+            time: 'Yesterday 10:14 PM'
+          },
+          {
+            sender: 'ai',
+            text: 'Walaikum Assalam Bilal! Yes, our riders carry an active QR code for JazzCash / Easypaisa and a contactless card machine. You can pay with either upon arrival!',
+            time: 'Yesterday 10:15 PM'
+          }
+        ]
+      }
+    };
+
+    let activeConversationId = 'conv_ahmed_khan';
+
+    // Global setter for AI mode control
+    window.setConversationAiState = function(convId, isActive) {
+      if (conversations[convId]) {
+        conversations[convId].aiActive = isActive;
+        if (convId === activeConversationId) {
+          updateAiControlsView();
+        }
+      }
+    };
+
+    function toggleActiveAiMode() {
+      if (!activeConversationId || !conversations[activeConversationId]) return;
+      const currentConv = conversations[activeConversationId];
+      currentConv.aiActive = !currentConv.aiActive;
+      updateAiControlsView();
+    }
+
+    function updateAiControlsView() {
+      const container = document.getElementById('aiControlContainer');
+      const banner = document.getElementById('aiStoppedBanner');
+      if (!container || !activeConversationId || !conversations[activeConversationId]) return;
+
+      const conv = conversations[activeConversationId];
+
+      if (conv.aiActive) {
+        // AI is Active state
+        container.innerHTML = `
+          <div class="flex items-center gap-2 bg-emerald-50/70 border border-emerald-200/60 pl-2.5 pr-1.5 py-1 rounded-lg">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="font-medium text-emerald-800 text-xs tracking-tight">AI On</span>
+            <button onclick="toggleActiveAiMode()" class="border border-slate-300 hover:bg-white text-slate-700 text-xs px-2 py-0.5 rounded-md transition font-medium ml-1 bg-white/70">
+              Stop AI
+            </button>
+          </div>
+        `;
+        if (banner) banner.classList.add('hidden');
+      } else {
+        // AI is Stopped state
+        container.innerHTML = `
+          <div class="flex items-center gap-2 bg-amber-50/70 border border-amber-200/70 pl-2.5 pr-1.5 py-1 rounded-lg">
+            <span class="inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            <span class="font-medium text-amber-800 text-xs tracking-tight">AI Stopped</span>
+            <button onclick="toggleActiveAiMode()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-2.5 py-0.5 rounded-md transition font-medium ml-1 shadow-xs">
+              Resume AI
+            </button>
+          </div>
+        `;
+        if (banner) banner.classList.remove('hidden');
+      }
+    }
+
+    function selectConversation(convId) {
+      if (!conversations[convId]) return;
+      activeConversationId = convId;
+      const conv = conversations[convId];
+
+      // Show chat viewport, hide empty state
+      const emptyState = document.getElementById('emptyConversationState');
+      const chatInterface = document.getElementById('activeChatInterface');
+      const viewportWrapper = document.getElementById('chatViewportWrapper');
+      const sidebar = document.getElementById('chatSidebar');
+
+      if (emptyState) emptyState.classList.add('hidden');
+      if (chatInterface) chatInterface.classList.remove('hidden');
+
+      // Mobile responsive toggle: show chat interface full screen, hide sidebar
+      if (viewportWrapper) {
+        viewportWrapper.classList.remove('hidden');
+        viewportWrapper.classList.add('flex');
+      }
+      if (sidebar) {
+        sidebar.classList.add('hidden');
+        sidebar.classList.remove('flex');
+        sidebar.classList.add('md:flex');
+      }
+
+      // Update sidebar active highlights
+      const rows = document.querySelectorAll('.chat-row');
+      rows.forEach(row => {
+        if (row.getAttribute('data-conv-id') === convId) {
+          row.className = 'chat-row flex items-center gap-3 px-3.5 py-3 bg-[#e8f1ec]/60 hover:bg-[#e8f1ec] cursor-pointer transition-colors border-l-4 border-[#003323]';
+          const nameSpan = row.querySelector('.text-sm');
+          if (nameSpan) nameSpan.className = 'text-sm font-semibold text-gray-900 truncate';
+          const avatar = row.querySelector('.rounded-full');
+          if (avatar && !avatar.classList.contains('bg-[#25D366]')) {
+            avatar.className = 'w-11 h-11 rounded-full bg-[#054c36] text-[#b1f0d1] flex items-center justify-center font-semibold text-sm shrink-0';
+          }
+        } else {
+          row.className = 'chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-gray-50 cursor-pointer transition-colors';
+          const nameSpan = row.querySelector('.text-sm');
+          if (nameSpan) nameSpan.className = 'text-sm font-medium text-gray-800 truncate';
+          const avatar = row.querySelector('.rounded-full');
+          if (avatar && !avatar.classList.contains('bg-[#25D366]')) {
+            avatar.className = 'w-11 h-11 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-semibold text-sm shrink-0';
+          }
+        }
+      });
+
+      // Update Chat Header details
+      const headerAvatar = document.getElementById('activeChatAvatar');
+      const headerName = document.getElementById('activeChatName');
+      const headerPhone = document.getElementById('activeChatPhone');
+      if (headerAvatar) headerAvatar.textContent = conv.initials;
+      if (headerName) headerName.textContent = conv.name;
+      if (headerPhone) headerPhone.textContent = conv.phone;
+
+      // Update AI Header and Messages
+      updateAiControlsView();
+      renderMessages(conv);
+    }
+
+    // Mobile back button handler
+    function backToChatsList() {
+      const viewportWrapper = document.getElementById('chatViewportWrapper');
+      const sidebar = document.getElementById('chatSidebar');
+      if (viewportWrapper) {
+        viewportWrapper.classList.add('hidden');
+        viewportWrapper.classList.remove('flex');
+      }
+      if (sidebar) {
+        sidebar.classList.remove('hidden');
+        sidebar.classList.add('flex');
+      }
+    }
+
+    // Support empty conversation state
+    function clearSelection() {
+      activeConversationId = null;
+      const rows = document.querySelectorAll('.chat-row');
+      rows.forEach(row => {
+        row.className = 'chat-row flex items-center gap-3 px-3.5 py-3 hover:bg-gray-50 cursor-pointer transition-colors';
+      });
+
+      const emptyState = document.getElementById('emptyConversationState');
+      const chatInterface = document.getElementById('activeChatInterface');
+      if (emptyState) emptyState.classList.remove('hidden');
+      if (chatInterface) chatInterface.classList.add('hidden');
+    }
+
+    // Render messages for active conversation
+    function renderMessages(conv) {
+      const viewport = document.getElementById('messagesViewport');
+      if (!viewport) return;
+
+      let html = `
+        <div class="flex justify-center my-1">
+          <span class="px-3 py-1 rounded-md bg-white text-gray-600 shadow-xs text-xs font-medium tracking-wide">
+            Today
+          </span>
+        </div>
+      `;
+
+      conv.messages.forEach(msg => {
+        if (msg.sender === 'customer') {
+          html += `
+            <div class="flex flex-col items-start max-w-sm md:max-w-md">
+              <div class="bg-white text-gray-900 ${msg.dealImage ? 'p-1.5' : 'px-3.5 py-2'} rounded-lg rounded-tl-none shadow-xs relative text-sm border border-black/5">
+                ${msg.dealImage ? `
+                  <div class="relative w-full rounded-md overflow-hidden mb-1.5 bg-gray-100">
+                    <img alt="Customer Inquiry Deal" class="w-full h-44 object-cover" src="${msg.dealImage.url}"/>
+                    <div class="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-0.5 rounded text-[11px] font-medium backdrop-blur-xs">
+                      ${msg.dealImage.caption}
+                    </div>
+                  </div>
+                ` : ''}
+                <p class="${msg.dealImage ? 'px-1 pt-0.5 leading-snug' : 'leading-relaxed'}">${msg.text}</p>
+                <div class="flex items-center justify-end mt-1 ${msg.dealImage ? 'px-1 pb-0.5' : ''}">
+                  <span class="text-[11px] text-gray-400">${msg.time}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (msg.sender === 'ai') {
+          html += `
+            <div class="flex flex-col items-end max-w-sm md:max-w-md ml-auto">
+              <span class="text-[11px] text-gray-400 font-medium mr-1 mb-1">AI</span>
+              <div class="bg-[#d9fdd3] text-gray-900 px-3.5 py-2.5 rounded-lg rounded-tr-none shadow-xs relative text-sm border border-emerald-600/10">
+                <p class="leading-relaxed">${msg.text}</p>
+                <div class="flex items-center justify-end gap-1 mt-1 text-right">
+                  <span class="text-[11px] text-gray-500">${msg.time}</span>
+                  <span class="material-symbols-outlined text-[15px] text-[#53bdeb]">done_all</span>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (msg.sender === 'system') {
+          html += `
+            <div class="flex flex-col items-center my-2 max-w-md mx-auto w-full px-2">
+              <div class="bg-slate-100 border border-slate-200/80 text-slate-800 px-3 py-2 rounded-lg text-xs shadow-xs w-full flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-slate-500 shrink-0 mt-0.5">info</span>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-0.5">
+                    <span class="font-semibold text-slate-600 uppercase tracking-wider text-[10px]">System</span>
+                    <span class="text-[10px] text-slate-400">${msg.time}</span>
+                  </div>
+                  <p class="text-slate-700 leading-normal">${msg.text}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (msg.sender === 'human') {
+          html += `
+            <div class="flex flex-col items-end max-w-sm md:max-w-md ml-auto">
+              <span class="text-[11px] text-gray-400 font-medium mr-1 mb-1">You</span>
+              <div class="bg-[#d9fdd3] text-gray-900 px-3.5 py-2 rounded-lg rounded-tr-none shadow-xs relative text-sm border border-emerald-600/10">
+                <p class="leading-relaxed">${escapeHtml(msg.text)}</p>
+                <div class="flex items-center justify-end gap-1 mt-1 text-right">
+                  <span class="text-[11px] text-gray-500">${msg.time}</span>
+                  <span class="material-symbols-outlined text-[15px] text-[#53bdeb]">done_all</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      viewport.innerHTML = html;
+      viewport.scrollTop = viewport.scrollHeight;
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text || !activeConversationId) return;
+
+      const currentConv = conversations[activeConversationId];
+
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const timeStr = `${hours}:${minutes} ${ampm}`;
+
+      // Save message to conversation record
+      currentConv.messages.push({
+        sender: 'human',
+        text: text,
+        time: timeStr
+      });
+
+      // Re-render messages view
+      renderMessages(currentConv);
+
+      // Update snippet in sidebar
+      const activeRow = document.querySelector(`.chat-row[data-conv-id="${activeConversationId}"]`);
+      if (activeRow) {
+        const snippet = activeRow.querySelector('.chat-snippet');
+        if (snippet) snippet.textContent = text;
+      }
+
+      input.value = '';
+    }
+
+    function filterChats(query) {
+      const q = query.toLowerCase();
+      const rows = document.querySelectorAll('.chat-row');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    }
+
+    function escapeHtml(string) {
+      if (!string) return '';
+      const entityMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+      return String(string).replace(/[&<>"']/g, s => entityMap[s]);
+    }
+
+    // Initialize initial conversation view
+    document.addEventListener('DOMContentLoaded', () => {
+      selectConversation('conv_ahmed_khan');
+    });
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      selectConversation('conv_ahmed_khan');
+    }
+  </script>
+</body></html>
